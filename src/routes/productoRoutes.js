@@ -12,3 +12,4 @@ router.patch("/:codigo", productoController.updateProducto);
 
 module.exports = router;
 
+console.log("✅ productoRoutes.js se montó correctamente");

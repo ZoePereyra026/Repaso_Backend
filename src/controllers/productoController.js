@@ -3,6 +3,8 @@ const Producto = require("../models/producto");
 // Obtener todos los productos (con filtro opcional por categoría)
 // Este controlador maneja la obtención de todos los productos, permitiendo filtrar por categoría si se proporciona.
 const getAllProductos = async (req, res) => {
+  console.log("📡 Entró a getAllProductos");
+
   const categoria = req.query.categoria;
   const query = !categoria
     ? {}
