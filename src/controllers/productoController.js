@@ -37,6 +37,24 @@ const getProductoByCodigo = async (req, res) => {
   }
 };
 
+// Filtrar productos por rango de precios
+const filtrarPorPrecio = async (req, res) => {
+  const { precioMin, precioMax } = req.query;
+
+  // Convierte los parámetros a números
+  const min = parseFloat(precioMin) || 0;
+  const max = parseFloat(precioMax) || Number.MAX_SAFE_INTEGER;
+
+  try {
+    const productos = await Producto.find({
+      precio: { $gte: min, $lte: max }
+    });
+    res.json(productos);
+  } catch (error) {
+    res.status(500).json({ error: "Error al filtrar productos", detalle: error.message });
+  }
+};
+
 // Crear un nuevo producto
 const createProducto = async (req, res) => {
   const { codigo, nombre, precio, categorias } = req.body;
@@ -121,6 +139,7 @@ const deleteProducto = async (req, res) => {
 module.exports = {
   getAllProductos,
   getProductoByCodigo,
+  filtrarPorPrecio, 
   createProducto,
   deleteProducto,
   updateProducto,
