@@ -39,48 +39,84 @@ const getProductoByCodigo = async (req, res) => {
 
 // Crear un nuevo producto
 const createProducto = async (req, res) => {
-  const nuevoProducto = new Producto(req.body);
+  const { codigo, nombre, precio, categorias } = req.body;
+
+  // Validar que todos los campos sean obligatorios
+  if (!codigo || !nombre || !precio || !categorias) {
+    return res.status(400).json({ error: "Todos los campos son necesarios" });
+  }
+
   try {
-    const guardado = await nuevoProducto.save();
-    res.status(201).json(guardado);
+    // Verificar si ya existe un producto con ese código
+    const productoExistente = await Producto.findOne({ codigo: parseInt(codigo) });
+    if (productoExistente) {
+      return res.status(409).json({ error: "El producto ya existe" });
+    }
+
+    // Crear y guardar el nuevo producto
+    const nuevoProducto = new Producto({
+      codigo: parseInt(codigo),
+      nombre,
+      precio,
+      categorias,
+    });
+
+    await nuevoProducto.save();
+
+    res.status(201).json(nuevoProducto);
   } catch (error) {
-    res.status(500).json({ error: "Error al crear producto", detalle: error });
+    res.status(500).json({ error: "Error al crear el producto", detalle: error.message });
   }
 };
 
-// Actualizar producto por código
+// Actualizar producto por código PUT 
 const updateProducto = async (req, res) => {
   const { codigo } = req.params;
+  const { nombre, precio, categorias } = req.body;
+
+  if (!nombre && !precio && !categorias) {
+    return res.status(400).json({ error: "Se debe proporcionar al menos un campo para actualizar" });
+  }
+
   try {
-    const actualizado = await Producto.findOneAndUpdate(
-      { codigo: parseInt(codigo) },
-      req.body,
-      { new: true }
-    );
-    if (!actualizado) {
-      res.status(404).json({ message: "Producto no encontrado" });
-    } else {
-      res.json(actualizado);
+    const producto = await Producto.findOne({ codigo: parseInt(codigo) });
+
+    if (!producto) {
+      return res.status(404).json({ message: "Producto no encontrado" });
     }
+
+    if (nombre) producto.nombre = nombre;
+    if (precio) producto.precio = precio;
+    if (categorias) producto.categorias = categorias;
+
+    await producto.save();
+
+    res.status(200).json(producto); 
   } catch (error) {
-    res.status(500).json({ error: "Error al actualizar producto", detalle: error });
+    res.status(500).json({ error: "Error al actualizar el producto", detalle: error });
   }
 };
+
 
 // Eliminar producto por código
 const deleteProducto = async (req, res) => {
-  const { codigo } = req.params;
+  const codigo = parseInt(req.params.codigo);
+
+  if (isNaN(codigo)) {
+    return res.status(400).json({ error: "El código debe ser un número válido" });
+  }
+
   try {
-    const eliminado = await Producto.findOneAndDelete({ codigo: parseInt(codigo) });
-    if (!eliminado) {
-      res.status(404).json({ message: "Producto no encontrado" });
-    } else {
-      res.json(eliminado);
-    }
+    const productoBorrado = await Producto.findOneAndDelete({ codigo });
+
+    productoBorrado
+      ? res.json({ message: "Producto eliminado", producto: productoBorrado })
+      : res.status(404).json({ message: "Producto no encontrado" });
   } catch (error) {
     res.status(500).json({ error: "Error al eliminar producto", detalle: error });
   }
 };
+
 
 module.exports = {
   getAllProductos,

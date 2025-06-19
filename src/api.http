@@ -1,6 +1,8 @@
+---
 ### Obtener todos los productos
 GET http://localhost:3000/api/productos
 
+---
 ### Obtener un producto por código
 GET http://localhost:3000/api/productos/1
 
@@ -18,6 +20,7 @@ Content-Type: application/json
   "categorias": ["Categoria1", "Categoria2"]
 }
 
+---
 ### Actualizar un producto
 PUT http://localhost:3000/api/productos/1
 Content-Type: application/json
@@ -28,5 +31,6 @@ Content-Type: application/json
   "categorias": ["Categoria1", "Categoria3"]
 }
 
+---
 ### Eliminar un producto
-DELETE http://localhost:3000/api/productos/1
+DELETE http://localhost:3000/api/productos/29

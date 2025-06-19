@@ -8,8 +8,7 @@ router.get("/", productoController.getAllProductos);
 router.get("/:codigo", productoController.getProductoByCodigo);
 router.post("/", productoController.createProducto);
 router.delete("/:codigo", productoController.deleteProducto);
-router.patch("/:codigo", productoController.updateProducto);
+router.put("/:codigo", productoController.updateProducto);
 
 module.exports = router;
 
-console.log("✅ productoRoutes.js se montó correctamente");
